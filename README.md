@@ -250,14 +250,14 @@
 
     ```js
     it("passes a11y test", async () => {
-      await testA11Y(<Component />, options);
+      await testA11Y(<MyComponent />, options);
     });
     ```
 
     If you need to perform some kind of action, e.g. opening a Menu or Modal before testing for accessibility, you may also pass an element to `testA11Y`:
 
     ```js
-    it("contains valid html when opened", () => {
+    it("passes a11y test when opened", async () => {
       const { container } = render(<MyComponent />);
 
       const button = screen.getByRole('button');
@@ -272,8 +272,8 @@
     To disable certain html validation rules, e.g. when unavoidable for reasons beyond your control, you may pass an object `axeOptions` to `options`, which is a proxy for [`axe-core`](https://github.com/nickcolley/jest-axe#axe-configuration) configuration options.
 
     ```js
-    it("contains valid html", async () => {
-      await testA11Y(<Component />, {
+    it("passes a11y test", async () => {
+      await testA11Y(<MyComponent />, {
         axeOptions: {
           rules: {
             "image-alt": { enabled: false },
@@ -289,7 +289,22 @@
 
     ```js
     it("contains valid html", () => {
-      validateHtml(<Component />, options);
+      validateHtml(<MyComponent />, options);
+    });
+    ```
+    
+    If you need to perform some kind of action, e.g. opening a Menu or Modal before testing for accessibility, you may also pass an element to `validateHtml`:
+
+    ```js
+    it("passes a11y test when opened", () => {
+      const { container } = render(<MyComponent />);
+
+      const button = screen.getByRole('button');
+
+      // actually open the menu as other elements are not rendered before
+      userEvent.click(button);
+
+      validateHtml(container);
     });
     ```
 
@@ -297,7 +312,7 @@
 
     ```js
     it("contains valid html", () => {
-      validateHtml(<Component />, {
+      validateHtml(<MyComponent />, {
         htmlValidate: {
           rules: {
             "attribute-boolean-style": "off",
