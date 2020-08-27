@@ -28,26 +28,6 @@
         - type: `string`
         - default: `en`
 
-      ## sentry
-
-      Required environment variables for `Sentry`.
-
-      - `NEXT_PUBLIC_SENTRY_DSN`
-
-        Sentry API endpoint
-
-      - `SENTRY_ORG`
-
-        The organization this project belongs to.
-
-      - `SENTRY_PROJECT`
-
-        The name of the project within `Sentry`.
-
-      - `SENTRY_AUTH_TOKEN`
-
-        Token created within `Sentry` to support sourcemap uploads.
-
       ## auth
 
       Required environment variables for authentication.
@@ -87,6 +67,26 @@
       - `DISCORD_CLIENT_SECRET`
 
         Discord App client ID and secret. See `Authentication > Discord`.
+
+      ## sentry
+
+      Environment variables for `Sentry`. These will be automatically created by the [Vercel Integration](https://docs.sentry.io/product/integrations/vercel/).
+
+      - `NEXT_PUBLIC_SENTRY_DSN`
+
+        Sentry API endpoint.
+
+      - `SENTRY_ORG`
+
+        The organization this project belongs to.
+
+      - `SENTRY_PROJECT`
+
+        The name of the project within `Sentry`.
+
+      - `SENTRY_AUTH_TOKEN`
+
+        Token created by `Sentry` to support sourcemap uploads.
 
     - GitHub Actions
 
@@ -150,6 +150,7 @@
       # Requirements
 
       - `Sentry` account (register [here](https://sentry.io/auth/login/))
+      - [Vercel Integration](https://docs.sentry.io/product/integrations/vercel/)
 
       # Setup
 
@@ -168,28 +169,6 @@
       - release management with source map support via `@sentry/webpack-plugin`
 
         During build, a separate release visible within the `Sentry` dashboard will be created.
-
-      `Sentry` requires a few environment variables for this:
-
-      - `NEXT_PUBLIC_SENTRY_DSN`
-
-        The endpoint where frontend errors will be reported to. You'll receive this link right after creating a project within `Sentry`.
-
-        If you already have created your project, you may find it under `[Project] > Settings > Client Keys`.
-
-      - `SENTRY_ORG`
-
-        The name of your `Sentry` organization. In `Sentry`, click `Settings` on the left side. You'll be within `Organization Settings`. The first field, `Name` is what you need.
-
-      - `SENTRY_PROJECT`
-
-        The name of the project.
-
-      - `SENTRY_AUTH_TOKEN`
-
-        Generate a new token with default permissions [here](https://sentry.io/settings/account/api/auth-tokens/).
-
-      Add those variables to `.env` and you're ready to go!
 
   - Authentication
 
@@ -518,7 +497,7 @@
 
   # API Routes
 
-  - when using `Sentry` and `next-connect`, always use `sentryMiddleware` as first middleware
+  - when using `Sentry` and `next-connect`, always use `sentryMiddleware` as _first_ middleware
 
   # Testing
 
