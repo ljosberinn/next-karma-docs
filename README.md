@@ -1,10 +1,196 @@
 - Getting Started
 
   - Setting up a new project
+
     - .env
-    - Using Vercel
+
+      An overview over `next-karma`s use of environment variables.
+
+      `next-karma` makes extensive use of environment variables. A short overview before we dive into specific implementations:
+
+      ## i18n
+
+      Required environment variables for internationalization.
+
+      - `NEXT_PUBLIC_ENABLED_LANGUAGES`
+
+        A list of the currently enabled languages.
+
+        - type: `string`
+        - example: `en,de`
+
+      - `NEXT_PUBLIC_FALLBACK_LANGUAGE`
+
+        Should a user with an unknown `Accept-Language` header visit the site, this language will be used as fallback.
+
+        Must be a part of `NEXT_PUBLIC_ENABLED_LANGUAGES`.
+
+        - type: `string`
+        - default: `en`
+
+      ## sentry
+
+      Required environment variables for `Sentry`.
+
+      - `NEXT_PUBLIC_SENTRY_DSN`
+
+        Sentry API endpoint
+
+      - `SENTRY_ORG`
+
+        The organization this project belongs to.
+
+      - `SENTRY_PROJECT`
+
+        The name of the project within `Sentry`.
+
+      - `SENTRY_AUTH_TOKEN`
+
+        Token created within `Sentry` to support sourcemap uploads.
+
+      ## auth
+
+      Required environment variables for authentication.
+
+      - `NEXT_PUBLIC_ENABLED_PROVIDER`
+
+        A list of the currently enabled 3rd party provider.
+
+        Each provider must also have both `CLIENT_ID` and `CLIENT_SECRET` defined.
+
+        - type: `string`
+        - example: `google,discord`
+
+      - `NEXT_PUBLIC_SESSION_LIFETIME`
+
+        Session lifetime of the httpOnly cookie in seconds.
+
+        - type: `number`
+        - default: 28800 (8 hours)
+
+      - `GITHUB_CLIENT_ID`
+      - `GITHUB_CLIENT_SECRET`
+
+        GitHub App client ID and secret. See `Authentication > GitHub`.
+
+      - `GOOGLE_CLIENT_ID`
+      - `GOOGLE_CLIENT_SECRET`
+
+        Google App client ID and secret. See `Authentication > Google`.
+
+      - `FACEBOOK_CLIENT_ID`
+      - `FACEBOOK_CLIENT_SECRET`
+
+        Facebook App client ID and secret. See `Authentication > Facebook`.
+
+      - `DISCORD_CLIENT_ID`
+      - `DISCORD_CLIENT_SECRET`
+
+        Discord App client ID and secret. See `Authentication > Discord`.
+
     - GitHub Actions
+
+      How to set up CI/CD with GitHub
+
+      To deploy via GitHub Actions you need the following secrets set in your repository:
+
+      - `CC_TEST_REPORTER_ID`
+        1. Login [to CodeClimate](https://codeclimate.com/login)
+        2. After setting up your repository, go to `Repo Settings`
+        3. Select `Test coverage` in the left menu
+        4. Copy the `TEST REPORTER ID`
+      - `VERCEL_TOKEN`
+        - create one [here](https://vercel.com/account/tokens)
+      - `VERCEL_PROJECT_ID`
+      - `VERCEL_ORG_ID`
+      - `GITHUB_TOKEN`
+        - create one [here](https://github.com/settings/tokens/new) with repository scope
+
+      To add a secret, go to your repositories `Settings` tab and then select `Secrets`.
+
+      `VERCEL_PROJECT_ID` and `VERCEL_ORG_ID` can be retrieved from your projects `.vercel/project.json` file.
+      For that, you will need to globally install the [Vercel CLI](https://vercel.com/docs/cli#getting-started):
+
+      ```js
+      npm i -g vercel
+      ```
+
+      After logging in, in your project simply execute `vercel`, it will create the required file (more info [here](https://github.com/amondnet/vercel-action#project-linking)).
+
+      > If you wish to skip any of those steps, edit `.github/workflows/deploy.yml` accordingly.
+
+    - GitHub Issue Template
+
+      `next-karma` comes with two templates out of the box:
+
+      - Bug Report
+
+        Associated label(s): `bug`
+
+      - Feature Request
+
+        Associated label(s): `enhancement`
+
+      You may edit them in `.github/ISSUE_TEMPLATE/Bug Fix.md`.
+
+    - GitHub PR Template
+
+      `next-karma` comes with one template out of the box:
+
+      - Bug Fix
+
+        Associated label(s): `bug`
+
+      You may edit it in `.github/PULL_REQUEST_TEMPLATE/Bug Fix.md`.
+
     - Using Sentry
+
+      How to set up `Sentry`
+
+      # Requirements
+
+      - `Sentry` account (register [here](https://sentry.io/auth/login/))
+
+      # Setup
+
+      `next-karma` leverages several of `Sentry`s tools:
+
+      - preconfigured, global ErrorBoundary in `_app.tsx` via `@sentry/react`
+
+        This global ErrorBoundary is just here for the worst case. You should use some yourself additionally.
+
+        Due to `Sentry` being initialized in the UI, any frontend error will be caught, traced and reported.
+
+      - `next-connect` API route middleware via `@sentry/node`
+
+        When using the included `sentryMiddleware`, API route errors will be caught, traced and reported.
+
+      - release management with source map support via `@sentry/webpack-plugin`
+
+        During build, a separate release visible within the `Sentry` dashboard will be created.
+
+      `Sentry` requires a few environment variables for this:
+
+      - `NEXT_PUBLIC_SENTRY_DSN`
+
+        The endpoint where frontend errors will be reported to. You'll receive this link right after creating a project within `Sentry`.
+
+        If you already have created your project, you may find it under `[Project] > Settings > Client Keys`.
+
+      - `SENTRY_ORG`
+
+        The name of your `Sentry` organization. In `Sentry`, click `Settings` on the left side. You'll be within `Organization Settings`. The first field, `Name` is what you need.
+
+      - `SENTRY_PROJECT`
+
+        The name of the project.
+
+      - `SENTRY_AUTH_TOKEN`
+
+        Generate a new token with default permissions [here](https://sentry.io/settings/account/api/auth-tokens/).
+
+      Add those variables to `.env` and you're ready to go!
+
   - Authentication
 
     - Custom Authentication
@@ -82,7 +268,7 @@
 
   - Internationalization
 
-    An overview over the react-i18n integration within next-karma.
+    An overview over the `react-i18next` integration within `next-karma`.
 
     # react-i18next
 
@@ -106,12 +292,10 @@
 
     ## Adjusting <html> attributes
 
-    When a user changes the language, next-karma will adjust the
+    When a user changes the language, `next-karma` will adjust the
 
     - [html.dir attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dir) using an allowlist
     - [html.lang attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang)
-
-  - CodeClimate
 
 - Guides
 
@@ -260,7 +444,7 @@
     it("passes a11y test when opened", async () => {
       const { container } = render(<MyComponent />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
 
       // actually open the menu as other elements are not rendered before
       userEvent.click(button);
@@ -292,14 +476,14 @@
       validateHtml(<MyComponent />, options);
     });
     ```
-    
+
     If you need to perform some kind of action, e.g. opening a Menu or Modal before testing for accessibility, you may also pass an element to `validateHtml`:
 
     ```js
     it("passes a11y test when opened", () => {
       const { container } = render(<MyComponent />);
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole("button");
 
       // actually open the menu as other elements are not rendered before
       userEvent.click(button);
@@ -322,20 +506,29 @@
     });
     ```
 
-    # Best practices
-
-    - always use `describe('<ComponentName />, () => {})` for components
-    - avoid naming tests with conjunctives:
-      - do: `changes theme on click`
-      - don't: `should change theme on click`
-    - with required props, always import the type/interface of the components props and use it for your default props definition
-    - always use the custom render function unless no render context needed
-    - always use the accessibility `testA11Y` function
-      - always name the a11y test `passes a11y test` | `...given default props` | `...when opened`
-    - always use the html validation `validateHtml` function
-      - always name the html test `contains valid html` | `...given default props` | `...when opened`
-
 - Testing API Routes
 
 - Best Practices
-  - TypeScript: `WithChildren`, only type non-primitive types
+
+  # TypeScript
+
+  - only type non-primitive types to let inferrence work
+  - use the included `WithChildren` interface to explicitly type `children` over the use of `React.FC`
+  - name component props not just `Props`, but export them and name them like the component, e.g. `Button` has `ButtonProps`
+
+  # API Routes
+
+  - when using `Sentry` and `next-connect`, always use `sentryMiddleware` as first middleware
+
+  # Testing
+
+  - always use `describe('<ComponentName />, () => {})` for components
+  - avoid naming tests with conjunctives:
+    - do: `changes theme on click`
+    - don't: `should change theme on click`
+  - with required props, always import the type/interface of the components props and use it for your default props definition
+  - always use the custom render function unless no render context needed
+  - always use the accessibility `testA11Y` function
+    - always name the a11y test `passes a11y test` | `...given default props` | `...when opened`
+  - always use the html validation `validateHtml` function
+    - always name the html test `contains valid html` | `...given default props` | `...when opened`
