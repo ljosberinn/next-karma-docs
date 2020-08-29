@@ -276,6 +276,130 @@
     - [html.dir attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dir) using an allowlist
     - [html.lang attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/lang)
 
+  - Included Components
+
+    `next-karma` comes with a few predefined components for you to use. None of them are mandatory. All are tested.
+
+    - Core Components
+
+      These are components that `next-karma` uses internally. It is recommended to keep them where they are.
+
+      Location: `/karma/client/components`
+
+      Used at: `/karma/client/Karma.tsx`
+
+      - `<MetaThemeColorSynchronizer />`
+
+        As the name already hints - synchronizes the `<meta name="theme-color" />` tag to the currently active color mode.
+
+        Dependencies:
+
+        - `@chakra-ui`
+
+        When to touch:
+
+        - when you change the default background colors
+
+        More info:
+
+        - https://developers.google.com/web/updates/2015/08/using-manifest-to-set-sitewide-theme-color
+
+      - `<ServiceWorker />`
+
+        Again, as the name already hints - registers the service worker provided by `next-offline`.
+
+        > Disabled in development! If you run `yarn build` in development, the `service-worker.js` in `public` will however be registered as the file is now present. Keep an eye out for accidental registrations in dev. This is **intentional**, as you can test the component in dev this way.
+
+        Dependencies:
+
+        - `@chakra-ui`
+        - `i18next`
+        - `react-i18next`
+
+        When to touch:
+
+        - when you want to add functionality
+        - when you want to change the internationalization namespace of the service worker (default: `serviceWorker`)
+        - when you don't care about service workers, you can safely delete all references of the component:
+          - delete usage of component in `src/client/Karma.tsx`
+          - delete `src/client/__tests__/ServiceWorker.test.tsx`
+          - uninstall `next-offline`
+          - remove `next-offline` config in `next.config.js`
+
+    - Other
+
+      These are demo components `next-karma` partially uses in the docs. They are also a showcase of `@chakra-ui` capabilities. Do with them what you want.
+
+      Location: `/src/client/components`
+
+      - `<ColorModeSwitch />`
+
+        One of two color mode toggles coming with `next-karma`. Changes the color mode on click. Fully accessible.
+
+        Dependencies:
+
+        - `@chakra-ui`
+        - `react-i18next`
+        - `react-icons`
+
+      - `<ColorModeSwitchAlt />`
+
+        One of two color mode toggles coming with `next-karma`. Changes the color mode on click. Fully accessible.
+
+        Dependencies:
+
+        - `@chakra-ui`
+        - `i18next`
+        - `react-i18next`
+        - `react-icons`
+
+      - `<CustomPWAInstallPrompt />`
+
+        Very barebones example component on how to integrate a custom PWA install prompt.
+
+        > Relies on the `beforeinstallprompt` event which is only supported by Chrome and Android WebView!
+
+        Dependencies:
+
+        - `@chakra-ui`
+
+      - `<ExternalLink />`
+
+        Preconfigured component with sane defaults for linking to external sites, built upon `@chakra-ui/Link`.
+
+        Dependencies:
+
+        - `@chakra-ui`
+
+      - `<InternalLink />`
+
+        Preconfigured component for linking internally, built upon `@chakra-ui/Link` and `next/link`.
+
+        Dependencies:
+
+        - `@chakra-ui`
+
+      - `<LanguageSwitch />`
+
+        Menu-based language selection with bundle-loading support.
+
+        Dependencies:
+
+        - `@chakra-ui`
+        - `i18next`
+        - `react-i18next`
+        - `react-icons`
+        - `react-flag-kit`
+
+      - `<WebShareButton />`
+
+        Mobile share button using the `navigator.share` API. Only renders where `navigator.share` is supported.
+
+        Dependencies:
+
+        - `@chakra-ui`
+        - `react-icons`
+
 - Guides
 
   - API routes with next-connect
