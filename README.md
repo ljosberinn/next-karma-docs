@@ -254,10 +254,47 @@
     [i18next](https://www.i18next.com/) is a well established, well maintained internationalization framework.
     `next-karma` initializes with defaults which you may find in `karma/client/i18n.ts`.
 
-    # Shoutout to [UnlyEd](https://github.com/UnlyEd)
+    # Shoutout to [UnlyEd](https://github.com/UnlyEd) & [isaachinman](https://github.com/isaachinman)
 
-    At the time of writing, none of the previously widely used internationalization libraries for Next.js are serverless compatible.
-    UnlyEd and their project [next-right-now](https://github.com/UnlyEd/next-right-now) implemented a solution which `next-karma` draws inspiration from.
+    At the time of writing, the commonly used i18n solution for Next.js, [`next-i18next`](https://github.com/isaachinman/next-i18next) is serverless compatible, but still relies on `App.getInitialProps` which is no longer recommended when using Next.js 9.3+.
+    UnlyEd and their project [`next-right-now`](https://github.com/UnlyEd/next-right-now) implemented a solution which `next-karma` draws inspiration from.
+    
+    If you are already familiar with `next-i18next`, `next-karma`s solution will feel similar in how to set up.
+    
+    # Setup
+    
+    Just like `next-i18next`, `next-karma` expects your internationalization data to be stored in `public/static/locales/$SLUG/$NAMESPACE.json` files.
+    
+    For demonstration purposes, `next-karma` ships with 4 granular namespaces: `auth`, `i18n`, `serviceWorker` and `theme` in both English and German.
+    
+    Namespaces need to be imported defined within `karma/server/i18n/cache.ts` following the existing pattern.
+    
+    Finally, on a per page basis, follow this pattern:
+
+    ```ts
+    // e.g. /pages/page.tsx
+    import type { WithKarma } from '../karma/client/Karma';
+    import { KarmaProvider, createGetServerSideProps } from '../karma/client/Karma';
+    import type { Namespace } from '../karma/server/i18n/cache';
+
+    // adjust accordingly
+    export type PageProps = WithKarma;
+
+    // eslint-disable-next-line import/no-default-export
+    export default function Page({ karma }: PageProps): JSX.Element {
+      return (
+        <KarmaProvider {...karma}>
+          <h1>next-karma</h1>
+        </KarmaProvider>
+      );
+    }
+
+    const i18nNamespaces: Namespace[] = ['serviceWorker', 'theme'];
+
+    export const getServerSideProps = createGetServerSideProps({ i18nNamespaces });
+    ```
+
+    This ensures only the namespaces you need for this specific site will be loaded in `getServerSideProps` while keeping type-safety.
 
     # Language detection
 
@@ -267,8 +304,12 @@
     - [HTTP Accept-Language header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language) through an internal parser to avoid unnecessary dependencies
     - dev-defined `FALLBACK_LANGUAGE` (see `.env` chapter)
 
-    # Additional Features
+    # Testing
+    
+    Following the spirit of `@testing-library`s integrative testing approach, all components have access to all languages and namsepaces. This means you can freely change keys in your translation. However, you might have to adjust tests when changing your actual translation as this is a change which affects users.
 
+    # Additional Features
+    
     ## Adjusting <html> attributes
 
     When a user changes the language, `next-karma` will adjust the
@@ -625,7 +666,6 @@
 
   # Testing
 
-  - always use `describe('<ComponentName />, () => {})` for components
   - avoid naming tests with conjunctives:
     - do: `changes theme on click`
     - don't: `should change theme on click`
