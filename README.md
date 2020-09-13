@@ -88,7 +88,7 @@
 
         Token created by `Sentry` to support sourcemap uploads.
 
-    - GitHub Actions
+      ## GitHub Actions
 
       How to set up CI/CD with GitHub
 
